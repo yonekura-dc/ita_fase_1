@@ -23,7 +23,7 @@ from os.path import dirname
 from sklearn.model_selection import KFold
 
 OUT_DIR = dirname(__file__)+'/out'
-DATA_DIR = dirname(dirname(dirname(__file__)))+'/data'
+DATA_DIR = '/app/data'
 
 data = TabularDataset(DATA_DIR+'/train.csv')
 data.head()
@@ -35,7 +35,7 @@ label_to_drop = "cent_trans_cor" if label == "cent_price_cor" else "cent_price_c
 data = data.drop(columns=[label_to_drop])
 
 # + tags=[]
-kf = KFold(n_splits=3, random_state=42, shuffle=True)
+kf = KFold(n_splits=10, random_state=42, shuffle=True)
 
 soma = 0
 valores = []

@@ -1,0 +1,15 @@
+FROM python:3.8-slim
+
+
+COPY ./data /app/data
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrading pip and installing packages 
+RUN pip install --upgrade pip setuptools wheel
+RUN python -m pip install -U "mxnet<2.0.0"
+RUN python -m pip install autogluon seaborn sklearn pandas

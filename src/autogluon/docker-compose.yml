@@ -4,7 +4,7 @@ services:
         container_name: autogluon
         build:
             context: ./../../.
-            dockerfile: ./src/autogluon/Dockerfile.autogluon
+            dockerfile: ./src/autogluon/Dockerfile.compose
         command: python /app/src/autogluon/run_autogluon.py
         volumes:
-            - "./out:/app/src/autogluon/out"
+            - ".:/app/src/autogluon"
