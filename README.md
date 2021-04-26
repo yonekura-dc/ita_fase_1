@@ -23,5 +23,5 @@ in `ita_fase_1/`
 ```
 docker build -t autogluon:v1 -f src/autogluon/Dockerfile .
 
-docker run --name autogluon_app -v "$(pwd)"/out:/app/src/autogluon/out autogluon:v1
+docker run --name autogluon_app -v "$(pwd)"/src/autogluon:/app/src/autogluon autogluon:v1
 ```
