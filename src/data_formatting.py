@@ -34,9 +34,18 @@ sns.set_palette("viridis")
 
 df = pd.read_csv("../data/train.csv")
 df_test = pd.read_csv("../data/test.csv")
+df = df[df.cent_trans_cor > -0.38]
+
+df.columns.unique()
+
+'''
+'p', 'f', 'a1', 'a2', 'a3', 'a4', 'b1', 'b2', 'b3', 'b4', 'c1', 'c2',
+       'c3', 'c4', 'g1', 'g2', 'l1', 'l2', 'l3', 'l4', 'e1', 'e2',
+        'sd_trans'],
+'''
 
 sns.histplot(data=df, x="cent_price_cor")
-sns.histplot(data=df, x="cent_trans_cor")
+sns.histplot(data=df, x="cent_trans_cor", color='r')
 df = df[df.cent_trans_cor > -0.38]
 
 
@@ -120,8 +129,8 @@ hm = sns.heatmap(
 )
 
 # +
-plot_var_histogram = False
-plot_var_cor = False
+plot_var_histogram = True
+plot_var_cor = True
 
 if plot_var_histogram:
     fig, ax = plt.subplots(figsize=(35, 30))

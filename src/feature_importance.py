@@ -38,7 +38,7 @@ X = df.drop(["cent_price_cor", "cent_trans_cor"], axis=1)
 y = df["cent_trans_cor"].values
 
 model = RandomForestRegressor(
-    n_estimators=200, max_depth=15, random_state=1337, n_jobs=4, min_samples_leaf=2
+    n_estimators=100, max_depth=15, random_state=1337, n_jobs=4, min_samples_leaf=2
 )
 
 model.fit(X, y)
@@ -51,12 +51,10 @@ sns.barplot(data=final_df, x="Features", y="Importances", palette="viridis")
 plt.xticks(rotation=45)
 plt.show()
 
-"""
-estimator = RandomForestRegressor(n_estimators=200, max_depth=15, random_state=1337, n_jobs=4, min_samples_leaf=2)
+estimator = RandomForestRegressor(n_estimators=10, max_depth=15, random_state=1337, n_jobs=4, min_samples_leaf=2)
 selector = RFECV(estimator, step=1, cv=5)
 selector = selector.fit(X, y)
 selector.ranking_
-"""
 
 out_detector = IsolationForest(contamination=0.01)
 out_detector.fit(df)

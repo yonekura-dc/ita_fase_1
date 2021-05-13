@@ -59,6 +59,9 @@ from tensorflow.keras.callbacks import (
 )
 
 df = pd.read_csv("../data/f_train.csv")
+#df = df[["n", "sd_trans", "volume", "cent_price_cor", "cent_trans_cor"]]
+bruh = ["n", "b1", "b3", "g1", "l1", "l3", "e_avg", "g_l", "rf1", "volume", "floor_area", "rf3", "sd_trans", "cent_price_cor", "cent_trans_cor"]
+df = df[bruh]
 X = df.drop(["cent_price_cor", "cent_trans_cor"], axis=1).values
 y = df[["cent_price_cor", "cent_trans_cor"]].values
 
@@ -67,8 +70,8 @@ y = df[["cent_price_cor", "cent_trans_cor"]].values
 def add_dense(x, n):
     x = Dense(
         n,
-        kernel_regularizer=regularizers.l1_l2(l1=0.01, l2=0.01),
-        use_bias=False,
+        kernel_regularizer=regularizers.l1_l2(l1=0.0, l2=0.0),
+        use_bias=True,
         kernel_initializer=he_normal(),
     )(x)
     x = LeakyReLU()(x)
@@ -81,15 +84,15 @@ def output_layer(x, name):
         1,
         activation="tanh",
         name=name,
-        use_bias=False,
-        kernel_regularizer=regularizers.l1_l2(l1=0.01, l2=0.01),
+        use_bias=True,
+        kernel_regularizer=regularizers.l1_l2(l1=0.0, l2=0.0),
         kernel_initializer=glorot_uniform(),
     )(x)
 
 
 # +
 in_ = Input(shape=(X.shape[1],))
-x = add_dense(in_, 10)
+x = add_dense(in_, 7)
 out1 = output_layer(x, "price_out")
 out2 = output_layer(x, "trans_out")
 
@@ -106,10 +109,10 @@ model.compile(
 )
 
 earlystop = EarlyStopping(
-    monitor="val_trans_out_mae",
+    monitor="price_out_mae",
     min_delta=0.0001,
     patience=100,
-    verbose=1,
+    verbose=0,
     restore_best_weights=True,
 )
 
@@ -117,16 +120,25 @@ f_y = {"price_out": y[:, 0], "trans_out": y[:, 1]}
 model.fit(
     X,
     f_y,
-    epochs=400,
-    callbacks=[],
+    epochs=600,
+    callbacks=[earlystop],
     validation_split=0.1,
     shuffle=True,
     batch_size=2000,
-    verbose=0,
+    verbose=1,
 )
+
+model.evaluate(X,f_y)
+"""
+0.09380487352609634,
+0.09001212567090988
+"""
 
 # +
 df_test = pd.read_csv("../data/f_test.csv")
+bruh = ["id", "n", "b1", "b3", "g1", "l1", "l3", "e_avg", "g_l", "rf1", "volume", "floor_area", "rf3", "sd_trans"]
+df_test = df_test[bruh]
+
 test = df_test.drop(["id"], axis=1)
 id_test = df_test["id"]
 
@@ -143,3 +155,4 @@ sns.histplot(data=df, x="cent_trans_cor", stat="probability", bins=30, color="w"
 sns.histplot(data=result, x="price", stat="probability", bins=30, color="r")
 sns.histplot(data=result, x="trans", stat="probability", bins=30, color="b")
 # -
+
