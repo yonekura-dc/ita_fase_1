@@ -17,12 +17,13 @@
 from autogluon.tabular import TabularDataset, TabularPredictor
 import seaborn as sns
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from os.path import dirname
 from sklearn.model_selection import KFold
 
-OUT_DIR = dirname(__file__)+'/out2'
+OUT_DIR = dirname(__file__)+'/out'
 DATA_DIR = '/app/data'
 
 # data = TabularDataset(DATA_DIR+'/f_train.csv')
@@ -37,7 +38,7 @@ DATA_DIR = '/app/data'
 
 
 # + tags=[] jupyter={"source_hidden": true}
-def run_feature_importance(label, test_data, predictor, path_output):
+def run_feature_importance(test_data, predictor, path_output):
     feature_importance = predictor.feature_importance(test_data)
     with open(path_output, 'a+') as f:
         content = ("-- feature importance --\n" +
@@ -54,11 +55,19 @@ def run_plot(label, test_data_nolabel, predictor, data):
     plt.savefig(OUT_DIR+'/output-{}.png'.format(label))
     plt.clf()
 
+# + tags=[]
+def get_results(predictor, label):
+    test_data = pd.read_csv(DATA_DIR+'/f_test.csv')
+    label_to_drop = "cent_trans_cor" if label == "cent_price_cor" else "cent_price_cor"
+    test_data = test_data.drop(columns=[label_to_drop])
+    df_out = pd.DataFrame(predictor.predict(test_data))
+    return df_out.values
+
 
 # + tags=[]
 def run(label, data):
 
-    kf = KFold(n_splits=2, random_state=42, shuffle=True)
+    kf = KFold(n_splits=5, random_state=42, shuffle=True)
 
     soma = 0
     valores = []
@@ -67,7 +76,7 @@ def run(label, data):
         train_data = data.iloc[fold[0]]
         test_data = data.iloc[fold[1]]
 
-        save_path = 'agModels-{}'.format(label)  # specifies folder to store trained models
+        save_path = OUT_DIR+'/agModels-{}'.format(label)  # specifies folder to store trained models
         metric = 'mae'
 
         predictor = TabularPredictor(label=label, path=save_path,problem_type='regression', 
@@ -96,15 +105,22 @@ def run(label, data):
                    "MAE por split: {}\n").format(datetime.now(), str(mae_media), [str(valor)+' ' for valor in valores])
         f.write(content)
     
-    run_feature_importance(label, test_data, predictor, path_output)
+    run_feature_importance(test_data, predictor, path_output)
     run_plot(label, test_data_nolabel, predictor, data)
+    return get_results(predictor, label)
 
 
 # + tags=[]
 labels = ["cent_price_cor", "cent_trans_cor"]
+results = []
 for label in labels:
     data = TabularDataset(DATA_DIR+'/f_train.csv')
-    data = data.sample(n=500, random_state=42)
+    data = data.sample(random_state=42)
     label_to_drop = "cent_trans_cor" if label == "cent_price_cor" else "cent_price_cor"
     data = data.drop(columns=[label_to_drop])
-    run(label, data)
+    results.append(run(label, data))
+
+results = np.array(results)
+df_resultado = pd.DataFrame({labels[0]: results[:, 0], labels[1]: results[:, 1]})
+df_resultado.to_csv(OUT_DIR+'/results_autogluon.csv', index=False)
+
