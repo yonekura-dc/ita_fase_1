@@ -4,7 +4,7 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("./data/f_train.csv")
+df = pd.read_csv("../../data/f_train.csv")
 X = df.drop(["cent_price_cor", "cent_trans_cor"], axis=1).values
 Y1 = df[["cent_price_cor"]].values
 Y2 = df[["cent_trans_cor"]].values
@@ -20,14 +20,14 @@ print(model2.fit(X,Y2))
 model2.export('tpot_ita_model2.py')
 
 
-df_test = pd.read_csv("./data/f_test.csv")
+df_test = pd.read_csv("../../data/f_test.csv")
 test = df_test.drop(["id"], axis=1)
 id_test = df_test["id"]
 
 y_pred1 = model1.predict(test)
 y_pred2 = model2.predict(test)
 
-bruh = {"cent_price_cor": y_pred1.reshape(-1), "cent_trans_cor": y_pred2.reshape(-1)}
-result = pd.DataFrame(bruh)
+df_out = {"cent_price_cor": y_pred1.reshape(-1), "cent_trans_cor": y_pred2.reshape(-1)}
+result = pd.DataFrame(df_out)
 
 result.to_csv('result.csv', index=False)
