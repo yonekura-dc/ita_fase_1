@@ -1,27 +1,14 @@
 # ITA Fase 1
 
-To install enviroment, run `conda env create --name ita`
-To create the ipykernel, run `python -m ipykernel install --user --name ita --display-name "ita"`
+## LSI Data Team:
+- David Yonekura
+- Leticia Magalhães
+- Miguel de Oliveira
 
+## Resultado final:
 
-## Autogluon container 
+### Predições
+`src/TPOT/result.csv`
 
-> Files will be written in `ita_fase_1/src/autogluon/out` of the host machine
-
-Building with **docker-compose**
-
-in `ita_fase_1/src/autogluon/`
-
-```
-docker compose up -d
-```
-
-Building and running with **docker build**
-
-in `ita_fase_1/`
-
-```
-docker build -t autogluon:v1 -f src/autogluon/Dockerfile .
-
-docker run --name autogluon_app -v "$(pwd)"/src/autogluon:/app/src/autogluon autogluon:v1
-```
+### Pipeline completa:
+`src/TPOT/tpot_final_pipeline.py`
